@@ -20,4 +20,14 @@ class User extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function edit(Request $request) 
+    {
+
+    }
+
+    public function delete(Request $request) 
+    {
+        
+    }
 }
