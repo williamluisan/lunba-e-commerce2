@@ -1,39 +1,38 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use App\Models\User;
+use App\Models\Product\Product;
 
-class UserController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $data = Product::all();
+
+        return $this->jsonResponse(200, true, '', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|min:8'
+            'code' => 'required|min:4|max:6|alpha_num:ascii|uppercase',
+            'price' => 'required|numeric'
         ]);
 
-        $data['password'] = bcrypt($data['password']);
+        Product::create($data);
 
-        User::create($data);
-
-        return response()->json("User created successfully", 201);
+        return $this->jsonResponse(201, true, 'Product created successfully');
     }
 
     /**
@@ -41,7 +40,12 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = Product::where('id', $id)->get();
+        if ($data->isEmpty()) {
+            return $this->jsonResponse(404, false, 'Not found');
+        }
+
+        return $this->jsonResponse(200, true, '', $data);
     }
 
     /**
