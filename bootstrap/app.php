@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 use App\Http\Middleware\ApiRequest;
 
+use Illuminate\Auth\AuthenticationException;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -19,5 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function(AuthenticationException $e) {
+            $resp = [
+                'success' => false,
+                'message' => 'Unauthenticated.'
+            ];
+            return response()->json($resp, 401);
+        });
     })->create();

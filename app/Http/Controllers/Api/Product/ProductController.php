@@ -40,8 +40,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $data = Product::where('id', $id)->get();
-        if ($data->isEmpty()) {
+        $data = Product::where('id', $id)->first();
+        if (empty($data)) {
             return $this->jsonResponse(404, false, 'Not found');
         }
 
