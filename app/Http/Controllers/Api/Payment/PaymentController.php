@@ -27,8 +27,9 @@ class PaymentController extends Controller
             'amount' => 'required|decimal:2'
         ]);
 
-        // laravel style, to consume by php
-        ProcessPaymentJob::dispatch($data)->onQueue('payments');
+        $orderId = "TRWXXS";
+
+        ProcessPaymentJob::dispatch($orderId)->onQueue('payments');
     }
 
     /**
