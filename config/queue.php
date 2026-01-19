@@ -89,6 +89,30 @@ return [
             ],
         ],
 
+        'rabbitmq'  => [
+            'driver' => 'rabbitmq',
+            'hosts' => [
+                [
+                    'host' => env('RABBITMQ_HOST'),
+                    'port' => env('RABBITMQ_PORT'),
+                    'user' => env('RABBITMQ_USER'),
+                    'password' => env('RABBITMQ_PASSWORD'),
+                    'vhost' => env('RABBITMQ_VHOST'),
+                ],
+            ],
+            'options' => [
+                'exchange' => [
+                    'name' => 'laravel_exchange',
+                    'type' => 'direct',
+                    'declare' => true,
+                ],
+                'queue' => [
+                    'declare' => true,
+                    'bind' => true,
+                ],
+            ]
+        ],
+
     ],
 
     /*

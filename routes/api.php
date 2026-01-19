@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Middleware\JWTMiddleware;
@@ -28,6 +29,7 @@ endif;
 if (env('SANCTUM_IS_ENABLED')):
     Route::apiResource('user', UserController::class);
     Route::apiResource('product', ProductController::class)->middleware("auth:sanctum");
+    Route::apiResource('payment', PaymentController::class)->middleware("auth:sanctum");
 endif;
 
 // Route::prefix('user')->group(function() {
