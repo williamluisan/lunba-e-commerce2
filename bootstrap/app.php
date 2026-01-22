@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\ApiRequest;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +28,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Unauthenticated.'
             ];
             return response()->json($resp, 401);
+        });
+        $exceptions->render(function(ThrottleRequestsException $e) {
+            $resp = [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+            return response()->json($resp, 429);
         });
     })->create();

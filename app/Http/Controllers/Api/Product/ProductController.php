@@ -26,8 +26,9 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'code' => 'required|min:4|max:6|alpha_num:ascii|uppercase',
-            'price' => 'required|numeric'
+            'code' => 'required|min:4|max:6|alpha_num:ascii|uppercase|unique:products,code',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric|max:99'
         ]);
 
         Product::create($data);
