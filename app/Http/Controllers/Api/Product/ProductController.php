@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 use App\Models\Product\Product;
 
 class ProductController extends Controller
@@ -30,6 +30,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|numeric|max:99'
         ]);
+
+        $data['public_id'] = (string) Str::ulid();
 
         Product::create($data);
 

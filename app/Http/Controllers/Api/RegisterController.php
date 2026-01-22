@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User\User;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -22,6 +23,7 @@ class RegisterController extends Controller
         ]);
 
         $data['password'] = Hash::make($data['password']);
+        $data['public_id'] = (string) Str::ulid();
 
         User::create($data);
 
