@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User\User;
 
 class UserController extends Controller
 {
@@ -12,7 +13,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        // $data = User::all()->toResourceCollection();
+        $data = User::paginate()->toResourceCollection();
+
+        return $this->jsonResponse(200, true, '', $data);
     }
 
     /**
@@ -28,7 +32,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = User::find($id)->toResource();
+
+        return $this->jsonResponse(200, true, '', $data);
     }
 
     /**
