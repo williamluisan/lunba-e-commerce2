@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Enums\ErrorMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -10,8 +11,9 @@ use App\Models\User\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
-class LoginController extends Controller
+class AuthController extends Controller
 {
     private $_sanctum_is_enabled = false;
     private $_jwt_is_enabled = false;
@@ -24,18 +26,18 @@ class LoginController extends Controller
                 'password' => 'required|string'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->jsonResponse(422, false, "Validation failed.", null, $e->errors());
+            return $this->jsonResponse(422, false, ErrorMessage::VALIDATION_FAILED->value, null, $e->errors());
         }
 
         $email = $data['username'];
         $user = User::where('email', $email)->first();
         if (empty($user)) {
-            return $this->jsonResponse(400, false, "Login failed.", null, []);
+            return $this->jsonResponse(400, false, ErrorMessage::LOGIN_FAILED->value, null, []);
         }
 
         // verifying password
         if ( ! Hash::check($data['password'], $user->password)) {
-            return $this->jsonResponse(401, false, "Wrong username or password.");
+            return $this->jsonResponse(401, false, ErrorMessage::WRONG_USERNAME_OR_PASSWORD->value);
         }
 
         /* sanctum implementation */
@@ -57,13 +59,39 @@ class LoginController extends Controller
                 $token = JWTAuth::fromUser($user);
                 $tokenPlainText = $token;
             } catch (JWTException $e) {
-                return $this->jsonResponse(500, false, "Failed to create token.");
+                return $this->jsonResponse(500, false, ErrorMessage::FAILED_TO_CREATE_TOKEN->value);
             }
         }
         /* // */
         
-        return $this->jsonResponse(200, true, "Logged in successfully.", [
+        return $this->jsonResponse(200, true, ErrorMessage::LOGIN_SUCCESS->value, [
             'token' => $tokenPlainText
+        ]);
+    }
+
+    function logout(): JsonResponse
+    {
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+        } catch (JWTException $e) {
+            return $this->jsonResponse(500, false, ErrorMessage::LOGIN_FAILED->value);
+        }
+
+        return $this->jsonResponse(200, true, ErrorMessage::LOGOUT_SUCCESS->value);
+    }
+
+    function refresh_token(): JsonResponse 
+    {
+        try {
+            $token = JWTAuth::parseToken()->refresh();
+        } catch (TokenExpiredException $e) {
+            return $this->jsonResponse(401, false, ErrorMessage::TOKEN_CANNOT_BE_REFRESHED->value);
+        } catch (JWTException $e) {
+            return $this->jsonResponse(500, false, ErrorMessage::FAILED_TO_REFRESH_TOKEN->value);
+        }
+
+        return $this->jsonResponse(200, true, ErrorMessage::TOKEN_REFRESH_SUCCESS->value, [
+            'refresh_token' => $token
         ]);
     }
 }

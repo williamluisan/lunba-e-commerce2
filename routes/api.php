@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\User\UserController;
@@ -11,7 +11,11 @@ use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Middleware\JWTMiddleware;
 
 Route::prefix('auth')->group(function() {
-    Route::post('/login', [LoginController::class, 'authenticate']);
+    Route::post('/login', [AuthController::class, 'authenticate']);
+    Route::post('/refresh_token', [AuthController::class, 'refresh_token']);
+    Route::middleware([JWTMiddleware::class])->group(function() {
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
 });
 
 /* regular */
@@ -31,7 +35,7 @@ Route::post('/register', [RegisterController::class, 'store']);
 if (env('JWT_IS_ENABLED')):
     Route::middleware([JWTMiddleware::class])->group(function () {
         Route::apiResource('user', UserController::class);
-        Route::apiResource('product', ProductController::class);
+        Route::apiResource('product', ProductController::class)->middleware(['throttle:api']);
     });
 endif;
 

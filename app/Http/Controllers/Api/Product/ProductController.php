@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
+use App\Enums\ErrorMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Product\Product;
@@ -35,17 +36,17 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        return $this->jsonResponse(201, true, 'Product created successfully');
+        return $this->jsonResponse(201, true, ErrorMessage::PRODUCT_CREATED->value);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $public_id)
     {
-        $data = Product::where('id', $id)->first();
+        $data = Product::where('public_id', $public_id)->first();
         if (empty($data)) {
-            return $this->jsonResponse(404, false, 'Not found');
+            return $this->jsonResponse(404, false, ErrorMessage::NOT_FOUND->value);
         }
 
         return $this->jsonResponse(200, true, '', $data);
