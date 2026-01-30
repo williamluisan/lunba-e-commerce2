@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
-use App\Enums\ErrorMessage;
+use App\Enums\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Product\Product;
@@ -36,7 +36,7 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        return $this->jsonResponse(201, true, ErrorMessage::PRODUCT_CREATED->value);
+        return $this->jsonResponse(201, true, Message::PRODUCT_CREATED->value);
     }
 
     /**
@@ -46,7 +46,7 @@ class ProductController extends Controller
     {
         $data = Product::where('public_id', $public_id)->first();
         if (empty($data)) {
-            return $this->jsonResponse(404, false, ErrorMessage::NOT_FOUND->value);
+            return $this->jsonResponse(404, false, Message::NOT_FOUND->value);
         }
 
         return $this->jsonResponse(200, true, '', $data);

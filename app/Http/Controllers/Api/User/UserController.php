@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Enums\ErrorMessage;
+use App\Enums\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User\User;
@@ -37,12 +37,12 @@ class UserController extends Controller
     {
         // if valid ulid
         if ( ! Str::isUlid($public_id)) {
-            return $this->jsonResponse(400, false, ErrorMessage::INVALID_ULID->value);
+            return $this->jsonResponse(400, false, Message::INVALID_ULID->value);
         }
 
         $data = User::where('public_id', $public_id)->first();
         if (empty($data)) {
-            return $this->jsonResponse(404, false, ErrorMessage::USER_NOT_FOUND->value);
+            return $this->jsonResponse(404, false, Message::USER_NOT_FOUND->value);
         }
 
         return $this->jsonResponse(200, true, '', $data->toResource());
