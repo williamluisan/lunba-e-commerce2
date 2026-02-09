@@ -6,6 +6,7 @@ enum Message: string
 {
     case NOT_FOUND = 'Not found.';
     case INVALID_ULID = 'Invalid ULID.';
+    case VALIDATION_ERROR = 'Validation error.';
     case VALIDATION_FAILED = 'Validation failed.';
     case FAILED_TO_CREATE_TOKEN = 'Failed to create token.';
     case FAILED_TO_REFRESH_TOKEN = 'Failed to refresh token.';

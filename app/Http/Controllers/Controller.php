@@ -12,7 +12,8 @@ abstract class Controller
         bool $success, 
         string $message = '', 
         mixed $data = null, 
-        array $errors = []): JsonResponse {
+        array $error = []): JsonResponse {
+
         // resolve first if the data is laravel resource
         if ($data instanceof JsonResource OR $data instanceof ResourceCollection) {
             $data = $data->response()->getData(true);
@@ -25,8 +26,12 @@ abstract class Controller
         if ( ! empty($data)) {
             $resp['data'] = $data;
         }
-        if ( ! empty($errors)) {
-            $resp['errors'] = $errors;
+        if ( ! empty($error)) {
+            $resp['error'] = [
+                'code' => $error['code'] ?? NULL,
+                'message' => $error['message'] ?? NULL,
+                'details' => $error['detail'] ?? NULL
+            ];
         }
 
         return response()->json($resp, $status);

@@ -36,13 +36,18 @@ class AuthController extends Controller
                 'password' => 'required|string'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->jsonResponse(422, false, Message::VALIDATION_FAILED->value, null, $e->errors());
+            $error = [
+                'code' => Message::VALIDATION_FAILED->name,
+                'message' => Message::VALIDATION_FAILED->value,
+                'detail' => $e->errors()
+            ];
+            return $this->jsonResponse(422, false, Message::VALIDATION_FAILED->value, null, $error);
         }
 
         $email = $data['username'];
         $user = User::where('email', $email)->first();
         if (empty($user)) {
-            return $this->jsonResponse(400, false, Message::LOGIN_FAILED->value, null, []);
+            return $this->jsonResponse(400, false, Message::WRONG_USERNAME_OR_PASSWORD->value, null, []);
         }
 
         // verifying password
@@ -82,7 +87,7 @@ class AuthController extends Controller
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
         } catch (JWTException $e) {
-            return $this->jsonResponse(500, false, Message::LOGIN_FAILED->value);
+            return $this->jsonResponse(500, false, Message::LOGOUT_FAILED->value);
         }
 
         return $this->jsonResponse(200, true, Message::LOGOUT_SUCCESS->value);
