@@ -18,8 +18,8 @@ class UserResource extends JsonResource
             'public_id' => $this->public_id,
             'name' => $this->name,
             'email' => $this->email,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updatet_at?->format('Y-m-d H:i:s'),
         ];
-        
-        // return parent::toArray($request);
     }
 }

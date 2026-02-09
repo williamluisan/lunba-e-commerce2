@@ -25,12 +25,21 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'code' => 'required|min:4|max:6|alpha_num:ascii|uppercase|unique:products,code',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric|max:99'
-        ]);
+        try {
+            $data = $request->validate([
+                'name' => 'required|string',
+                'code' => 'required|min:4|max:6|alpha_num:ascii|uppercase|unique:products,code',
+                'price' => 'required|numeric',
+                'stock' => 'required|numeric|max:99'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $error = [
+                'code' => Message::VALIDATION_FAILED->name,
+                'message' => Message::VALIDATION_FAILED->value,
+                'detail' => $e->errors()
+            ];
+            return $this->jsonResponse(422, false, Message::VALIDATION_FAILED->value, null, $error);
+        }
 
         $data['public_id'] = (string) Str::ulid();
 
@@ -44,12 +53,17 @@ class ProductController extends Controller
      */
     public function show(string $public_id)
     {
+        // if valid ulid
+        if ( ! Str::isUlid($public_id)) {
+            return $this->jsonResponse(400, false, Message::INVALID_ULID->value);
+        }
+
         $data = Product::where('public_id', $public_id)->first();
         if (empty($data)) {
             return $this->jsonResponse(404, false, Message::NOT_FOUND->value);
         }
 
-        return $this->jsonResponse(200, true, '', $data);
+        return $this->jsonResponse(200, true, '', $data->toResource());
     }
 
     /**
