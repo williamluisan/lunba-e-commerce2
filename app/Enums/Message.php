@@ -21,4 +21,6 @@ enum Message: string
     
     case USER_NOT_FOUND = 'User not found.';
     case PRODUCT_CREATED = 'Product created successfully.';
+
+    case USER_REGISTERED_SUCCESSFULLY = 'User registered successfully.';
 }
