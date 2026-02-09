@@ -16,7 +16,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        // $data = User::all()->toResourceCollection();
         $data = User::paginate()->toResourceCollection();
 
         return $this->jsonResponse(200, true, '', $data);
