@@ -34,8 +34,17 @@ Route::post('/register', [RegisterController::class, 'store']);
 /* with JWT */
 if (env('JWT_IS_ENABLED')):
     Route::middleware([JWTMiddleware::class])->group(function () {
+        // user
         Route::apiResource('user', UserController::class);
+        
+        // product
         Route::apiResource('product', ProductController::class)->middleware(['throttle:api']);
+        Route::prefix('product')
+            ->controller(ProductController::class)
+            ->middleware(['throttle:api'])
+            ->group(function() {
+                Route::get('{publicId}/stock', 'checkStock');
+            });
     });
 endif;
 

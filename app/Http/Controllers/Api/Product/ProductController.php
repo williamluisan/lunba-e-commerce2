@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use App\Enums\Message;
+use App\Http\Resources\Product\StockResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Product\Product;
@@ -51,14 +52,14 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $public_id)
+    public function show(string $publicId)
     {
         // if valid ulid
-        if ( ! Str::isUlid($public_id)) {
+        if ( ! Str::isUlid($publicId)) {
             return $this->jsonResponse(400, false, Message::INVALID_ULID->value);
         }
 
-        $data = Product::where('public_id', $public_id)->first();
+        $data = Product::where('public_id', $publicId)->first();
         if (empty($data)) {
             return $this->jsonResponse(404, false, Message::NOT_FOUND->value);
         }
@@ -80,5 +81,23 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Check the product stock
+     */
+    public function checkStock(string $publicId) 
+    {
+        $data = Product::where('public_id', $publicId)->first();
+
+        if (empty($data)) {
+            return $this->jsonResponse(404, false, Message::NOT_FOUND->value);
+        }
+
+        if ($data->stock == 0) {
+            return $this->jsonResponse(400, true, 'Stock not available', StockResource::make($data));
+        }
+
+        return $this->jsonResponse(200, true, 'Stock available', StockResource::make($data));
     }
 }
