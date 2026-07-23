@@ -33,5 +33,4 @@ new class extends Component {
     </label>
 
     <button type="submit">Save Post</button>
-    <flux:button>Button</flux:button>
 </form>
